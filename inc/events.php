@@ -51,11 +51,53 @@ class FdT_Events {
 
 	}
 
+	function query_vars() {
+		global $wp;
+		$wp->add_query_var('fdt_next_events');
+		$wp->add_query_var('fdt_previous_events');
+	}
+
 	function pre_get_posts($query) {
-		if(is_front_page())
+		if(is_front_page()) {
+			$query->set('post_type', 'fdt_event');
+			$query->set('fdt_next_events', 1);
+		}
+
+		/*
+		 * Next events query
+		 */
+
+		if($query->get('fdt_next_events')) {
+
 			$query->set('post_type', 'fdt_event');
 
+			$next_events_arg = array(
+				'key' => '_fdt_event_date',
+				'value' => time(),
+				'compare' => '>=',
+				'type' => 'CHAR'
+			);
+
+			if($query->get('meta_query')) {
+				$query->set('meta_query', array_merge_recursive($query->get('meta_query'), array($next_events_arg)));
+			} else {
+				$query->set('meta_query', array($next_events_arg));
+			}
+
+			$query->set('orderby', 'meta_value');
+			$query->set('meta_key', '_fdt_event_date');
+			$query->set('order', 'ASC');
+
+		}
+
 		return $query;
+	}
+
+	function is_event_query($query = false) {
+		global $wp_query;
+		$query = $query ? $query : $wp_query;
+
+		return ($query->get('post_type') == 'fdt_event' || $query->get('post_type') == array('fdt_event'));
 	}
 
 }

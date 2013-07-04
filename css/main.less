@@ -1,0 +1,285 @@
+/*
+ * Less functions
+ */
+.box-shadow(@arguments) {
+	-webkit-box-shadow: @arguments;
+	-khtml-box-shadow: @arguments;
+	-moz-box-shadow: @arguments;
+	-o-box-shadow: @arguments;
+	box-shadow: @arguments;
+}
+
+.border-radius(@radius) {
+	-webkit-border-radius: @radius;
+	-khtml-border-radius: @radius;
+	-moz-border-radius: @radius;
+	-o-border-radius: @radius;
+	border-radius: @radius;
+}
+
+.transition(@arguments) {
+	-webkit-transition: @arguments;
+	-khtml-transition: @arguments;
+	-moz-transition: @arguments;
+	-o-transition: @arguments;
+	transition: @arguments;
+}
+
+.transform(@arguments) {
+	-webkit-transform: @arguments;
+	-khtml-transform: @arguments;
+	-moz-transform: @arguments;
+	-o-transform: @arguments;
+	transform: @arguments;
+}
+.box-sizing(@arguments) {
+	-webkit-box-sizing: @arguments;
+	-moz-box-sizing: @arguments;
+	box-sizing: @arguments;
+}
+.font-smoothing(@arguments) {
+	-webkit-font-smoothing: @arguments;
+}
+
+.gradient(@color: #F5F5F5, @start: #EEE, @stop: #FFF) {
+	background: @color;
+	background:	-webkit-gradient(linear,
+				left bottom,
+				left top,
+				color-stop(0, @start),
+				color-stop(1, @stop));
+	background:	-ms-linear-gradient(bottom,
+				@start,
+				@stop);
+	background:	-moz-linear-gradient(center bottom,
+				@start 0%,
+				@stop 100%);
+	background:	-o-linear-gradient(@stop,
+				@start);
+	filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@stop,@start));
+}
+
+.placeholder(@color) {
+	::-webkit-input-placeholder {
+		color: @color;
+	}
+	:-moz-placeholder {
+		color: @color;
+	}
+	::-moz-placeholder {
+		color: @color;
+	}
+	::-ms-input-placeholder {
+		color: @color;
+	}
+}
+
+@maincolor: #77a832;
+
+.button,
+input[type=submit],
+button {
+	border: 0;
+	.gradient(@maincolor, darken(@maincolor, 5%), @maincolor);
+	.box-shadow(0 2px 3px rgba(0,0,0,0.6));
+	.border-radius(3px);
+	.transition(margin .2s ease-in-out);
+	padding: 10px;
+	color: #f0f0f0;
+	font-weight: 800;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+
+.section-title {
+	.city-selector {
+		width: 200px;
+		float: right;
+		margin: 0;
+		position: relative;
+		.gradient(@maincolor, darken(@maincolor, 5%), @maincolor);
+		.box-shadow(0 2px 3px rgba(0,0,0,0.6));
+		.border-radius(3px);
+		.transition(margin .2s ease-in-out);
+		color: #f0f0f0;
+		.city-title {
+			margin: 0;
+			padding: 14px 10px 14px 15px;
+			display: block;
+			text-transform: uppercase;
+			color: #f9f9f9;
+			font-weight: 800;
+			text-shadow: 1px 1px 1px rgba(0,0,0,.5);
+			cursor: default;
+			font-size: 12px;
+			line-height: 12px;
+			z-index: 2;
+			position: relative;
+		}
+		.lsf {
+			color: #f0f0f0;
+			font-size: 10px;
+			line-height: 10px;
+			margin-right: 8px;
+			margin-top: 2px;
+			text-shadow: 1px 1px 1px rgba(0,0,0,.3);
+			float: right;
+		}
+		.city-list {
+			display: none;
+			.gradient(#f0f0f0, #ddd, #f0f0f0);
+			.box-shadow(0 2px 3px rgba(0,0,0,0.6));
+			.border-radius(0 0 3px 3px);
+			position: relative;
+			z-index: 1;
+			padding: 0;
+			width: 100%;
+			overflow-x: hidden;
+			overflow-y: auto;
+			position: absolute;
+			top: 40px;
+			left: 0;
+			&::-webkit-scrollbar {
+				width: 5px;
+				.gradient(#f0f0f0, #ddd, #f0f0f0);
+			}
+			&::-webkit-scrollbar-thumb {
+				background: #333;
+			}
+			li {
+				margin: 0;
+				padding: 0;
+				border-bottom: 1px solid #ccc;
+				a {
+					padding: 20px 15px;
+					display: block;
+					font-weight: 200;
+					font-size: 10px;
+					line-height: 10px;
+					color: #555;
+					text-decoration: none;
+					&:hover {
+						.gradient(#333, #222, #333);
+						color: #f0f0f0;
+					}
+				}
+				&:last-child {
+					border-bottom: 0;
+				}
+				&.tip {
+					padding: 0 15px 15px;
+					color: #999;
+					font-style: italic;
+					font-size: 11px;
+				}
+			}
+		}
+		&:hover {
+			.city-title {
+				color: #333;
+				background: #f0f0f0;
+				text-shadow: 0 0 0;
+				border-color: #f0f0f0;
+			}
+			.lsf {
+				color: #333;
+				text-shadow: 0 0 0;
+			}
+			.city-list {
+				display: block;
+			}
+		}
+	}
+}
+
+.event-form {
+	input {
+		width: 100%;
+		.box-sizing(border-box);
+		&[type=submit] {
+			padding: 20px 0;
+			font-size: 18px;
+		}
+	}
+	.tip {
+		font-style: italic;
+		color: #999;
+	}
+	p.event-title input {
+		width: 100%;
+		.box-sizing(border-box);
+		padding: 15px;
+		font-size: 24px;
+		line-height: 24px;
+	}
+	p.event-description textarea {
+		width: 100%;
+		height: 318px;
+		.box-sizing(border-box);
+		padding: 15px;
+	}
+	.info {
+		margin-top: 120px;
+	}
+	.ui-datepicker {
+		width: 100%;
+	}
+	#geocode_box {
+		h4,
+		#mappress_streetview,
+		.latlng-container {
+			display: none;
+		}
+		#geocode_address {
+			width: 75%;
+			display: block;
+			float: left;
+		}
+		p {
+			margin: 0;
+		}
+		.draggable-tip {
+			margin: 0 0 10px;
+			font-size: 12px;
+			color: #999;
+			font-style: italic;
+		}
+		.button {
+			width: 18%;
+			float: right;
+			text-align: center;
+			line-height: 20px;
+			padding: 5px 0;
+			background: #fff;
+			text-decoration: none;
+			.border-radius(3px);
+			.box-shadow(0px 2px 2px rgba(0,0,0,0.2));
+			font-weight: normal;
+			text-transform: none;
+		}
+		.results {
+			p {
+				margin: 0 0 10px;
+			}
+			li {
+				padding: 10px;
+				margin: 0;
+				background: #f5f5f5;
+				border-bottom: 1px solid #eee;
+				cursor: pointer;
+				&.active {
+					background: #fff;
+					position: relative;
+					z-index: 2;
+					.box-shadow(0 1px 1px rgba(0,0,0,0.2));
+				}
+				&:hover {
+					background: #f9f9f9;
+				}
+			}
+		}
+		#map_canvas {
+			width: 100% !important;
+		}
+	}
+}

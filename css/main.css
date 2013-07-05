@@ -9,6 +9,8 @@
 .section-title .city-selector:hover .city-title{color:#333;background:#f0f0f0;text-shadow:0 0 0;border-color:#f0f0f0;}
 .section-title .city-selector:hover .lsf{color:#333;text-shadow:0 0 0;}
 .section-title .city-selector:hover .city-list{display:block;}
+.event-form .required-mark{color:red;font-weight:800;}
+.event-form .required{position:relative;}.event-form .required:after{content:'*';color:red;position:absolute;top:5px;right:10px;font-size:12px;font-weight:800;}
 .event-form input{width:100%;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}.event-form input[type=submit]{padding:20px 0;font-size:18px;}
 .event-form .tip{font-style:italic;color:#999;}
 .event-form p.event-title input{width:100%;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;padding:15px;font-size:24px;line-height:24px;}
@@ -19,8 +21,11 @@
 .event-form #geocode_box #geocode_address{width:75%;display:block;float:left;}
 .event-form #geocode_box p{margin:0;}
 .event-form #geocode_box .draggable-tip{margin:0 0 10px;font-size:12px;color:#999;font-style:italic;}
-.event-form #geocode_box .button{width:18%;float:right;text-align:center;line-height:20px;padding:5px 0;background:#fff;text-decoration:none;-webkit-border-radius:3px;-khtml-border-radius:3px;-moz-border-radius:3px;-o-border-radius:3px;border-radius:3px;-webkit-box-shadow:0px 2px 2px rgba(0, 0, 0, 0.2);-khtml-box-shadow:0px 2px 2px rgba(0, 0, 0, 0.2);-moz-box-shadow:0px 2px 2px rgba(0, 0, 0, 0.2);-o-box-shadow:0px 2px 2px rgba(0, 0, 0, 0.2);box-shadow:0px 2px 2px rgba(0, 0, 0, 0.2);font-weight:normal;text-transform:none;}
+.event-form #geocode_box .button{width:18%;float:right;text-align:center;line-height:20px;padding:5px 0;background:#fff;color:#333;text-decoration:none;-webkit-border-radius:3px;-khtml-border-radius:3px;-moz-border-radius:3px;-o-border-radius:3px;border-radius:3px;-webkit-box-shadow:0px 2px 2px rgba(0, 0, 0, 0.2);-khtml-box-shadow:0px 2px 2px rgba(0, 0, 0, 0.2);-moz-box-shadow:0px 2px 2px rgba(0, 0, 0, 0.2);-o-box-shadow:0px 2px 2px rgba(0, 0, 0, 0.2);box-shadow:0px 2px 2px rgba(0, 0, 0, 0.2);font-weight:normal;text-transform:none;}
 .event-form #geocode_box .results p{margin:0 0 10px;}
 .event-form #geocode_box .results li{padding:10px;margin:0;background:#f5f5f5;border-bottom:1px solid #eee;cursor:pointer;}.event-form #geocode_box .results li.active{background:#fff;position:relative;z-index:2;-webkit-box-shadow:0 1px 1px rgba(0, 0, 0, 0.2);-khtml-box-shadow:0 1px 1px rgba(0, 0, 0, 0.2);-moz-box-shadow:0 1px 1px rgba(0, 0, 0, 0.2);-o-box-shadow:0 1px 1px rgba(0, 0, 0, 0.2);box-shadow:0 1px 1px rgba(0, 0, 0, 0.2);}
 .event-form #geocode_box .results li:hover{background:#f9f9f9;}
 .event-form #geocode_box #map_canvas{width:100% !important;}
+.event-form .message{background:#333;border:1px solid #222;color:#f0f0f0;padding:20px;font-size:14px;line-height:18px;margin:0 0 20px;}.event-form .message.error{background:#ff6666;border-color:red;color:#cc0000;}
+.event-form .message.success,.event-form .message.updated{background:#00e600;border-color:green;color:#004d00;}
+.event-form .message p{margin:0;}

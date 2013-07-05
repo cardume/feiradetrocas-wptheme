@@ -16,8 +16,11 @@ class FdT_Events {
 	function setup() {
 		$this->register_post_type();
 		$this->acf_fields();
+		$this->setup_ajax();
 		add_filter('pre_get_posts', array($this, 'pre_get_posts'), 1);
+		add_filter('get_edit_post_link', array($this, 'edit_event_link'));
 		add_shortcode('fdt_new_event', array($this, 'new_event_shortcode'));
+		add_action('template_redirect', array($this, 'edit_event_template'));
 		add_action('mappress_geocode_scripts', array($this, 'geocode_scripts'));
 	}
 
@@ -61,7 +64,7 @@ class FdT_Events {
 			 * Date and time
 			 */
 			register_field_group(array (
-				'id' => 'acf_event-date-and-time',
+				'id' => 'acf_event-date-time',
 				'title' => __('Event date and time', 'feiradetrocas'),
 				'fields' => array (
 					array (
@@ -69,11 +72,11 @@ class FdT_Events {
 						'label' => __('Date and time', 'feiradetrocas'),
 						'time_format' => 'HH:mm',
 						'show_date' => 'true',
-						'date_format' => 'yy-mm-dd',
+						'date_format' => 'dd-mm-yy',
 						'show_week_number' => 'false',
 						'picker' => 'slider',
 						'save_as_timestamp' => 'true',
-						'key' => 'field_51d488053e34b',
+						'key' => 'field_event_date_time',
 						'name' => '_fdt_event_date',
 						'type' => 'date_time_picker',
 						'required' => 1,
@@ -196,6 +199,35 @@ class FdT_Events {
 
 	}
 
+	function edit_event_template() {
+		global $post;
+		if(is_singular('fdt_event') && isset($_GET['edit']) && current_user_can('edit_post', $post->ID)) {
+			?>
+			<?php get_header(); ?>
+
+			<?php if(have_posts()) : the_post(); ?>
+				<section id="content" class="single-post">
+					<header class="single-post-header">
+						<div class="container">
+							<div class="twelve columns">
+								<h1><?php _e('Editing', 'feiradetrocas'); ?>: <?php the_title(); ?></h1>
+							</div>
+						</div>
+					</header>
+					<div class="container">
+						<div class="twelve columns">
+							<?php $this->event_form($post); ?>
+						</div>
+					</div>
+				</section>
+			<?php endif; ?>
+
+			<?php get_footer(); ?>
+			<?php
+			exit();
+		}
+	}
+
 	function geocode_scripts() {
 		$geocode_service = mappress_get_geocode_service();
 		$gmaps_key = mappress_get_gmaps_api_key();
@@ -204,22 +236,32 @@ class FdT_Events {
 		wp_enqueue_script('mappress.geocode.box');
 	}
 
-	function new_event_form() {
+	function event_form($post = false) {
 		wp_enqueue_style('jquery-ui-smoothness', 'http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css');
 		wp_enqueue_script('jquery-ui', 'http://code.jquery.com/ui/1.10.3/jquery-ui.js', array('jquery'));
 		wp_enqueue_script('jquery-ui-timepicker-addon', get_stylesheet_directory_uri() . '/js/jquery-ui-timepicker-addon.js', array('jquery-ui'));
 		wp_enqueue_style('jquery-ui-timepicker-addon', get_stylesheet_directory_uri() . '/js/jquery-ui-timepicker-addon.css');
+		wp_enqueue_script('fdt-events', get_stylesheet_directory_uri() . '/inc/events.js', array('jquery'), '0.0.1');
+		wp_localize_script('fdt-events', 'fdt_events', array(
+			'ajaxurl' => admin_url('admin-ajax.php'),
+			'loading_msg' => __('Sending information...', 'feiradetrocas')
+		));
 		if(is_user_logged_in() && current_user_can('edit_posts')) {
 			?>
-			<form id="new-event-form" class="event-form" method="POST">
+			<form id="event-form" class="event-form" method="POST">
+				<p class="form-description"><?php _e('Required fields are marked with <span class="required-mark">*</span>', 'feiradetrocas'); ?></p>
+				<?php if($post) : ?>
+					<input type="hidden" name="event_data[post_id]" value="<?php echo $post->ID; ?>" />
+				<?php endif; ?>
+				<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('save_event'); ?>" />
 				<div class="row">
 					<div class="six columns alpha">
 						<div class="post-data">
-							<p class="event-title">
-								<input type="text" name="event_data[post_title]" placeholder="<?php _e('Event title', 'feiradetrocas'); ?>" />
+							<p class="event-title required">
+								<input type="text" name="event_data[post_title]" placeholder="<?php _e('Event title', 'feiradetrocas'); ?>" <?php if($post) echo 'value="' . $post->post_title . '"' ?> />
 							</p>
-							<p class="event-description">
-								<textarea name="event_data[post_content]" placeholder="<?php _e('Description', 'feiradetrocas'); ?>"></textarea>
+							<p class="event-description required">
+								<textarea name="event_data[post_content]" placeholder="<?php _e('Description', 'feiradetrocas'); ?>"><?php if($post) echo $post->post_content; ?></textarea>
 							</p>
 						</div>
 					</div>
@@ -230,28 +272,64 @@ class FdT_Events {
 							<div class="three columns alpha">
 								<div class="sponsor_01">
 									<p class="tip"><?php _e('Main sponsor information', 'feiradetrocas'); ?></p>
-									<p class="sponsor_01_name">
-										<input type="text" name="event_data[sponsor_01_name]" placeholder="<?php _e('Name', 'feiradetrocas'); ?>" />
+									<p class="sponsor_01_name required">
+										<?php
+										$sponsor_01_name = false;
+										if($post) {
+											$sponsor_01_name = get_field('_fdt_sponsor_01_name', $post->ID);
+										}
+										?>
+										<input type="text" name="event_data[sponsor_01_name]" placeholder="<?php _e('Name', 'feiradetrocas'); ?>" <?php if($sponsor_01_name) echo 'value="' . $sponsor_01_name . '"'; ?> />
 									</p>
-									<p class="sponsor_01_email">
-										<input type="text" name="event_data[sponsor_01_email]" placeholder="<?php _e('Email', 'feiradetrocas'); ?>" />
+									<p class="sponsor_01_email required">
+										<?php
+										$sponsor_01_email = false;
+										if($post) {
+											$sponsor_01_email = get_field('_fdt_sponsor_01_email', $post->ID);
+										}
+										?>
+										<input type="text" name="event_data[sponsor_01_email]" placeholder="<?php _e('Email', 'feiradetrocas'); ?>" <?php if($sponsor_01_email) echo 'value="' . $sponsor_01_email . '"'; ?> />
 									</p>
-									<p class="sponsor_01_phone">
-										<input type="text" name="event_data[sponsor_01_phone]" placeholder="<?php _e('Phone number', 'feiradetrocas'); ?>" />
+									<p class="sponsor_01_phone required">
+										<?php
+										$sponsor_01_phone = false;
+										if($post) {
+											$sponsor_01_phone = get_field('_fdt_sponsor_01_phone', $post->ID);
+										}
+										?>
+										<input type="text" name="event_data[sponsor_01_phone]" placeholder="<?php _e('Phone number', 'feiradetrocas'); ?>" <?php if($sponsor_01_phone) echo 'value="' . $sponsor_01_phone . '"'; ?> />
 									</p>
 								</div>
 							</div>
 							<div class="three columns omega">
 								<div class="sponsor_02">
-									<p class="tip"><?php _e('Second sponsor information', 'feiradetrocas'); ?></p>
+									<p class="tip"><?php _e('Secondary sponsor information', 'feiradetrocas'); ?></p>
 									<p class="sponsor_02_name">
-										<input type="text" name="event_data[sponsor_02_name]" placeholder="<?php _e('Name', 'feiradetrocas'); ?>" />
+										<?php
+										$sponsor_02_name = false;
+										if($post) {
+											$sponsor_02_name = get_field('_fdt_sponsor_02_name', $post->ID);
+										}
+										?>
+										<input type="text" name="event_data[sponsor_02_name]" placeholder="<?php _e('Name', 'feiradetrocas'); ?>" <?php if($sponsor_02_name) echo 'value="' . $sponsor_02_name . '"'; ?> />
 									</p>
 									<p class="sponsor_02_email">
-										<input type="text" name="event_data[sponsor_02_email]" placeholder="<?php _e('Email', 'feiradetrocas'); ?>" />
+										<?php
+										$sponsor_02_email = false;
+										if($post) {
+											$sponsor_02_email = get_field('_fdt_sponsor_02_email', $post->ID);
+										}
+										?>
+										<input type="text" name="event_data[sponsor_02_email]" placeholder="<?php _e('Email', 'feiradetrocas'); ?>" <?php if($sponsor_02_email) echo 'value="' . $sponsor_02_email . '"'; ?> />
 									</p>
 									<p class="sponsor_02_phone">
-										<input type="text" name="event_data[sponsor_02_phone]" placeholder="<?php _e('Phone number', 'feiradetrocas'); ?>" />
+										<?php
+										$sponsor_02_phone = false;
+										if($post) {
+											$sponsor_02_phone = get_field('_fdt_sponsor_02_phone', $post->ID);
+										}
+										?>
+										<input type="text" name="event_data[sponsor_02_phone]" placeholder="<?php _e('Phone number', 'feiradetrocas'); ?>" <?php if($sponsor_02_phone) echo 'value="' . $sponsor_02_phone . '"'; ?> />
 									</p>
 								</div>
 							</div>
@@ -261,9 +339,9 @@ class FdT_Events {
 				<div class="row">
 					<div class="seven columns alpha">
 						<div class="geocode">
-							<h3><?php _e('Point the location', 'feiradetrocas'); ?></h3>
+							<h3 class="required"><?php _e('Point the location', 'feiradetrocas'); ?></h3>
 							<p><?php _e('Enter the address and hit enter to find the event location', 'feiradetrocas'); ?></p>
-							<?php mappress_geocode_box(); ?>
+							<?php mappress_geocode_box($post); ?>
 							<script type="text/javascript">
 								jQuery(document).ready(function() {
 									geocodeBox();
@@ -273,25 +351,39 @@ class FdT_Events {
 					</div>
 					<div class="four columns offset-by-one omega">
 						<div class="date-time">
-							<h3><?php _e('Date and time', 'feiradetrocas'); ?></h3>
-							<p class="event-date-time">
-								<input type="hidden" name="event_data[event_date_time]" id="event_date_time_picker_field" />
-								<div id="event_date_time_picker"></div>
-								<script type="text/javascript">
-									jQuery(document).ready(function($) {
-										$('#event_date_time_picker').datetimepicker({
-											altField: '#event_date_time_picker_field',
-											altFieldTimeOnly: false,
-											altFormat: 'dd-mm-yy',
-											altTimeFormat: 'HH:mm'
-										});
+							<h3 class="required"><?php _e('Date and time', 'feiradetrocas'); ?></h3>
+							<?php
+							$date_time = false;
+							if($post) {
+								$date_time = get_field('field_event_date_time', $post->ID);
+							}
+							?>
+							<p><input type="hidden" name="event_data[event_date_time]" id="event_date_time_picker_field" <?php if($date_time) echo 'value="' . $date_time . '" data-datetime="' . $date_time . '"'; ?> /></p>
+							<div id="event_date_time_picker"></div>
+							<script type="text/javascript">
+								jQuery(document).ready(function($) {
+									var picker = $('#event_date_time_picker').datetimepicker({
+										altField: '#event_date_time_picker_field',
+										altFieldTimeOnly: false,
+										dateFormat: 'dd-mm-yy',
+										timeFormat: 'HH:mm',
+										showButtonPanel: false
 									});
-								</script>
-							</p>
+									if($('#event_date_time_picker_field').data('datetime')) {
+										var datetime = $('#event_date_time_picker_field').data('datetime');
+										var parsedDateTime = $.datepicker.parseDateTime('dd-mm-yy', 'HH:mm', datetime);
+										picker.datetimepicker('setDate', parsedDateTime);
+									}
+								});
+							</script>
 						</div>
 					</div>
 				</div>
-				<input type="submit" value="<?php _e('Submit event', 'feiradetrocas'); ?>" />
+				<?php if($post) : ?>
+					<input type="submit" value="<?php _e('Update event', 'feiradetrocas'); ?>" />
+				<?php else : ?>
+					<input type="submit" value="<?php _e('Submit event', 'feiradetrocas'); ?>" />
+				<?php endif; ?>
 			</form>
 			<?php
 		} elseif(!is_user_logged_in()) {
@@ -302,31 +394,123 @@ class FdT_Events {
 		}
 	}
 
-	function validate_event_form() {
-		if(isset($_POST['event_data'])) {
+	function setup_ajax() {
+		add_action('wp_ajax_nopriv_save_event', array($this, 'save_event'));
+		add_action('wp_ajax_save_event', array($this, 'save_event'));
+	}
 
-			$data = $_POST['event_data'];
+	function save_event() {
 
-			if(
-				!$data['post_title'] ||
-				!$data['post_content'] ||
-				!$data['sponsor_01_name'] ||
-				!$data['sponsor_01_phone'] ||
-				!(
-					!$data['sponsor_01_email'] ||
-					!$data['sponsor_01_phone']
-				)
-			) {
-				return array('message' => __('Make sure you filled all the necessary information', 'feiradetrocas'), 'status' => 'error');
-			}
+		/*
+		 * Check nonce
+		 */
+		if(!wp_verify_nonce($_REQUEST['_wpnonce'], 'save_event'))
+			$this->ajax_response(array('status' => 'error', 'message' => __('Permission denied.', 'feiradetrocas')));
 
+		$data = $_REQUEST['event_data'];
+
+		/* 
+		 * Check if user can edit post
+		 */
+		if($data['post_id'] && !current_user_can('edit_post', $data['post_id']))
+			$this->ajax_response(array('status' => 'error', 'message' => __('You are not allowed to edit this event.', 'feiradetrocas')));
+
+		/*
+		 * Validate fields
+		 */
+		if(
+			!$data['post_title'] ||
+			!$data['post_content'] ||
+			!$data['event_date_time'] ||
+			!$data['sponsor_01_name'] ||
+			(
+				!$data['sponsor_01_email'] &&
+				!$data['sponsor_01_phone']
+			) ||
+			!$_REQUEST['geocode_address']
+		) {
+			$this->ajax_response(array('status' => 'error', 'message' => __('Make sure you filled all the required fields.', 'feiradetrocas')));
 		}
 
-		return false;
+		/*
+		 * Save data
+		 */
+
+		$parsed = array(
+			'post' => array(
+				'ID' => $data['post_id'],
+				'post_title' => $data['post_title'],
+				'post_content' => $data['post_content'],
+				'post_status' => 'pending',
+				'post_type' => 'fdt_event'
+			),
+			'acf' => array(
+				'_fdt_sponsor_01_name' => $data['sponsor_01_name'],
+				'_fdt_sponsor_01_email' => $data['sponsor_01_email'],
+				'_fdt_sponsor_01_phone' => $data['sponsor_01_phone'],
+				'_fdt_sponsor_02_name' => $data['sponsor_02_name'],
+				'_fdt_sponsor_02_email' => $data['sponsor_02_email'],
+				'_fdt_sponsor_02_phone' => $data['sponsor_02_phone'],
+				'field_event_date_time' => $data['event_date_time']
+			)
+		);
+
+		$new = false;
+
+		if($parsed['post']['ID']) {
+
+			unset($parsed['post']['post_status']);
+			unset($parsed['post']['post_type']);
+
+			$post_id = wp_update_post($parsed['post']);
+
+		} else {
+
+			unset($parsed['post']['ID']);
+
+			$new = true;
+
+			$post_id = wp_insert_post($parsed['post']);
+
+			// store pending metadata for email submit when approved
+			update_post_meta($post_id, '_fdt_pending_approval', 1);
+		}
+
+		if(!$post_id)
+			$this->ajax_response(array('status' => 'error', 'message' => __('Something went wrong while creating your event, please try again. If the error persists, please contact our team.', 'feiradetrocas')));
+
+		// save acf
+		foreach($parsed['acf'] as $field_key => $field_value) {
+			update_field($field_key, $field_value, $post_id);
+		}
+
+		// save geo data
+		mappress_geocode_save($post_id);
+
+		if($new)
+			$this->ajax_response(array('status' => 'success', 'message' => __('Thank you for sending your event! You will receive an email soon.', 'feiradetrocas')));
+		else
+			$this->ajax_response(array('status' => 'updated', 'message' => __('Your event has been updated', 'feiradetrocas')));
+
+	}
+
+	function ajax_response($data) {
+		header('Content Type: application/json');
+		echo json_encode($data);
+		exit;
 	}
 
 	function new_event_shortcode($atts) {
-		return $this->new_event_form();
+		return $this->event_form();
+	}
+
+	function edit_event_link($link) {
+		global $post;
+
+		if(get_post_type($post->ID) == 'fdt_event' && !is_admin())
+			$link = add_query_arg(array('edit' => 1), get_permalink());
+
+		return $link;
 	}
 
 	function query_vars() {

@@ -519,6 +519,11 @@ class FdT_Events {
 	}
 
 	function pre_get_posts($query) {
+
+		/*
+		 * Set front page query
+		 */
+
 		if(is_front_page()) {
 			$query->set('post_type', 'fdt_event');
 			if(!$query->get('fdt_event_time'))
@@ -526,37 +531,92 @@ class FdT_Events {
 		}
 
 		/*
-		 * Next events query
+		 * Events meta query
 		 */
 
 		if($query->get('fdt_event_time')) {
-
+			
 			$compare = '>=';
-			$order = 'ASC';
 
-			if($query->get('fdt_event_time') == 'past') {
+			if($query->get('fdt_event_time') == 'past')
 				$compare = '<';
-				$order = 'DESC';
-			}
+
+			$events_args = false;
 
 			$query->set('post_type', 'fdt_event');
 
-			$next_events_arg = array(
-				'key' => '_fdt_event_date',
-				'value' => time(),
-				'compare' => $compare,
-				'type' => 'CHAR'
-			);
+			if($query->get('fdt_event_time') == 'past' || $query->get('fdt_event_time') == 'future') {
 
-			if($query->get('meta_query')) {
-				$query->set('meta_query', array_merge_recursive($query->get('meta_query'), array($next_events_arg)));
-			} else {
-				$query->set('meta_query', array($next_events_arg));
+				$events_args = array(
+					array(
+						'key' => '_fdt_event_date',
+						'value' => time(),
+						'compare' => $compare,
+						'type' => 'CHAR'
+					)
+				);
+
+			} elseif($query->get('fdt_event_time') == 'month') {
+
+				$events_args = array(
+					'relation' => 'AND',
+					array(
+						'key' => '_fdt_event_date',
+						'value' => time(),
+						'compare' => '>=',
+						'type' => 'CHAR'
+					),
+					array(
+						'key' => '_fdt_event_date',
+						'value' => strtotime('+1 month'),
+						'compare' => '<',
+						'type' => 'CHAR'
+					)
+				);
+
+			} elseif($query->get('fdt_event_time') == 'week') {
+
+				$events_args = array(
+					'relation' => 'AND',
+					array(
+						'key' => '_fdt_event_date',
+						'value' => time(),
+						'compare' => '>=',
+						'type' => 'CHAR'
+					),
+					array(
+						'key' => '_fdt_event_date',
+						'value' => strtotime('+1 week'),
+						'compare' => '<',
+						'type' => 'CHAR'
+					)
+				);
+
 			}
 
-			$query->set('orderby', 'meta_value');
-			$query->set('meta_key', '_fdt_event_date');
-			$query->set('order', $order);
+			if($events_args) { 
+				if($query->get('meta_query')) {
+					$query->set('meta_query', array_merge_recursive($query->get('meta_query'), $events_args));
+				} else {
+					$query->set('meta_query', $events_args);
+				}
+			}
+
+			/* 
+			 * Events ordering
+			 */
+			
+			if($this->is_event_query($query)) {
+
+				$order = 'ASC';
+
+				if($query->get('fdt_event_time') == 'past')
+					$order = 'DESC';
+
+				$query->set('orderby', 'meta_value');
+				$query->set('meta_key', '_fdt_event_date');
+				$query->set('order', $order);
+			}
 
 		}
 

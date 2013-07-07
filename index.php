@@ -15,27 +15,13 @@ if(is_front_page()) {
 <div class="section-title">
 	<div class="container">
 		<div class="twelve columns">
+			<?php fdt_custom_selector(); ?>
+			<?php fdt_time_selector(); ?>
 			<?php fdt_city_selector(); ?>
-			<h2><?php _e('Next events', 'mappress'); ?></h2>
+			<h2><?php _e('Events', 'mappress'); ?></h2>
 		</div>
 	</div>
 </div>
 <?php get_template_part('loop'); ?>
-
-<?php
-query_posts(array(
-	'post_type' => 'fdt_event',
-	'fdt_event_time' => 'past'
-));
-if(have_posts()) : ?>
-	<div class="section-title">
-		<div class="container">
-			<div class="twelve columns">
-				<h2><?php _e('Past events', 'mappress'); ?></h2>
-			</div>
-		</div>
-	</div>
-	<?php get_template_part('loop'); ?>
-<?php endif; ?>
 
 <?php get_footer(); ?>

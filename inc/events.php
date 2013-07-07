@@ -516,9 +516,67 @@ class FdT_Events {
 	function query_vars() {
 		global $wp;
 		$wp->add_query_var('fdt_event_time');
+		$wp->add_query_var('fdt_event_date_from');
+		$wp->add_query_var('fdt_event_date_to');
+	}
+
+	function get_event_time_query_array($value, $compare) {
+		return array(
+			'key' => '_fdt_event_date',
+			'value' => $value,
+			'compare' => $compare,
+			'type' => 'CHAR'
+		);
+	}
+
+	function get_available_times() {
+		$times = array(
+			'future' => array(
+				'title' => __('Upcoming events', 'feiradetrocas'),
+				'meta_query' => array(
+					$this->get_event_time_query_array(time(), '>=')
+				)
+			),
+			'week' => array(
+				'title' => __('This week', 'feiradetrocas'),
+				'meta_query' => array(
+					'relation' => 'AND',
+					$this->get_event_time_query_array(time(), '>='),
+					$this->get_event_time_query_array(strtotime('+1 week'), '<')
+				)
+			),
+			'month' => array(
+				'title' => __('This month', 'feiradetrocas'),
+				'meta_query' => array(
+					'relation' => 'AND',
+					$this->get_event_time_query_array(time(), '>='),
+					$this->get_event_time_query_array(strtotime('+1 month'), '<')
+				)
+			),
+			'past' => array(
+				'title' => __('Past events', 'feiradetrocas'),
+				'meta_query' => array(
+					$this->get_event_time_query_array(time(), '<')
+				)
+			)
+		);
+
+		return $times;
 	}
 
 	function pre_get_posts($query) {
+
+		if(isset($_REQUEST['fdt_event_time'])) {
+			$query->set('fdt_event_time', $_REQUEST['fdt_event_time']);
+		}
+
+		if(isset($_REQUEST['fdt_event_date_from'])) {
+			$query->set('fdt_event_date_from', $_REQUEST['fdt_event_date_from']);
+		}
+
+		if(isset($_REQUEST['fdt_event_date_to'])) {
+			$query->set('fdt_event_date_to', $_REQUEST['fdt_event_date_to']);
+		}
 
 		/*
 		 * Set front page query
@@ -526,7 +584,7 @@ class FdT_Events {
 
 		if(is_front_page()) {
 			$query->set('post_type', 'fdt_event');
-			if(!$query->get('fdt_event_time'))
+			if(!$query->get('fdt_event_time') && !$query->get('fdt_event_date_from') && !$query->get('fdt_event_date_to'))
 				$query->set('fdt_event_time', 'future');
 		}
 
@@ -534,90 +592,71 @@ class FdT_Events {
 		 * Events meta query
 		 */
 
-		if($query->get('fdt_event_time')) {
-			
-			$compare = '>=';
+		$meta_query = false;
 
-			if($query->get('fdt_event_time') == 'past')
-				$compare = '<';
+		if($query->get('fdt_event_date_from') || $query->get('fdt_event_date_to')) {
 
-			$events_args = false;
+			$from = $query->get('fdt_event_date_from');
+			$to = $query->get('fdt_event_date_to');
+
+			if(!$from)
+				$from = 0;
+			if(!$to)
+				$to = time() + time();
+
+			$meta_query = array(
+				'relation' => 'AND',
+				$this->get_event_time_query_array(strtotime($from), '>='),
+				$this->get_event_time_query_array(strtotime($to), '<')
+			);
+
+
+		} elseif($query->get('fdt_event_time')) {
+
+			$event_time = $query->get('fdt_event_time');
 
 			$query->set('post_type', 'fdt_event');
 
-			if($query->get('fdt_event_time') == 'past' || $query->get('fdt_event_time') == 'future') {
+			$times = $this->get_available_times();
 
-				$events_args = array(
-					array(
-						'key' => '_fdt_event_date',
-						'value' => time(),
-						'compare' => $compare,
-						'type' => 'CHAR'
-					)
-				);
+			// look inside available times query
 
-			} elseif($query->get('fdt_event_time') == 'month') {
+			foreach($times as $time_key => $args) {
 
-				$events_args = array(
-					'relation' => 'AND',
-					array(
-						'key' => '_fdt_event_date',
-						'value' => time(),
-						'compare' => '>=',
-						'type' => 'CHAR'
-					),
-					array(
-						'key' => '_fdt_event_date',
-						'value' => strtotime('+1 month'),
-						'compare' => '<',
-						'type' => 'CHAR'
-					)
-				);
-
-			} elseif($query->get('fdt_event_time') == 'week') {
-
-				$events_args = array(
-					'relation' => 'AND',
-					array(
-						'key' => '_fdt_event_date',
-						'value' => time(),
-						'compare' => '>=',
-						'type' => 'CHAR'
-					),
-					array(
-						'key' => '_fdt_event_date',
-						'value' => strtotime('+1 week'),
-						'compare' => '<',
-						'type' => 'CHAR'
-					)
-				);
-
-			}
-
-			if($events_args) { 
-				if($query->get('meta_query')) {
-					$query->set('meta_query', array_merge_recursive($query->get('meta_query'), $events_args));
-				} else {
-					$query->set('meta_query', $events_args);
+				if($time_key == $event_time) {
+					$meta_query = $args['meta_query'];
 				}
+
 			}
 
-			/* 
-			 * Events ordering
-			 */
-			
-			if($this->is_event_query($query)) {
+		}
 
-				$order = 'ASC';
+		/*
+		 * Set meta query if any
+		 */
 
-				if($query->get('fdt_event_time') == 'past')
-					$order = 'DESC';
-
-				$query->set('orderby', 'meta_value');
-				$query->set('meta_key', '_fdt_event_date');
-				$query->set('order', $order);
+		if($meta_query) { 
+			if($query->get('meta_query')) {
+				$query->set('meta_query', array_merge($query->get('meta_query'), $meta_query));
+			} else {
+				$query->set('meta_query', $meta_query);
 			}
+		}
 
+		/* 
+		 * Events ordering
+		 */
+		
+		if($this->is_event_query($query)) {
+
+			$order = 'ASC';
+
+			if($query->get('fdt_event_time') == 'past')
+				$order = 'DESC';
+
+			$query->set('orderby', 'meta_value');
+			$query->set('meta_key', '_fdt_event_date');
+			$query->set('order', $order);
 		}
 
 		return $query;
@@ -642,6 +681,76 @@ class FdT_Events {
 		return false;
 	}
 
+	function time_selector() {
+
+		if(!$this->is_event_query())
+			return false;
+
+		global $wp_query, $wp;
+
+		$current = $wp_query->get('fdt_event_time');
+		$available = $this->get_available_times();
+
+		$custom = false;
+		if(is_array($current) || !isset($available[$current]))
+			$custom = true;
+
+		?>
+		<div class="time-selector dropdown">
+			<?php if(!$custom) : ?>
+				<span class="title"><span class="lsf">&#xE03e;</span> <?php echo $available[$current]['title']; ?></span>
+			<?php else : ?>
+				<span class="title"><span class="lsf">&#xE03e;</span> <?php _e('Custom filter', 'feiradetrocas'); ?></span>
+			<?php endif; ?>
+			<ul class="list">
+				<?php foreach($available as $time_key => $args) : ?>
+					<?php if($time_key == $current) continue; ?>
+					<li>
+						<a href="<?php echo add_query_arg('fdt_event_time', $time_key, home_url($wp->request)); ?>"><?php echo $args['title']; ?></a>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+		<?php
+	}
+
+	function custom_selector() {
+
+		if(!$this->is_event_query())
+			return false;
+
+		wp_enqueue_style('jquery-ui-smoothness', 'http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css');
+		wp_enqueue_script('jquery-ui-datepicker');
+
+		$from = isset($_REQUEST['fdt_event_date_from']) ? $_REQUEST['fdt_event_date_from'] : false;
+		$to = isset($_REQUEST['fdt_event_date_to']) ? $_REQUEST['fdt_event_date_to'] : false;
+
+		?>
+		<form class="fdt-date-range" method="GET">
+			<label class="title" for="fdt_event_range_from"><?php _e('Filter by date range:', 'feiradetrocas'); ?></label>
+			<label class="from" for="fdt_event_range_from"><?php _e('from', 'feiradetrocas'); ?></label>
+			<input id="fdt_event_range_from" name="fdt_event_date_from" type="text" size="12" value="<?php if($from) echo $from; ?>" />
+			<label class="to" for="fdt_event_range_to"><?php _e('to', 'feiradetrocas'); ?></label>
+			<input id="fdt_event_range_to" name="fdt_event_date_to" type="text" size="12" value="<?php if($to) echo $to; ?>" />
+		
+			<input type="submit" value="<?php _e('Filter', 'feiradetrocas'); ?>" />	
+			<script type="text/javascript">
+				jQuery(document).ready(function($) {
+
+					var options = {
+						dateFormat: 'dd-mm-yy'
+					};
+
+					$('#fdt_event_range_from').datepicker(options);
+					$('#fdt_event_range_to').datepicker(options);
+
+				});
+			</script>
+		</form>
+		<?php
+	}
+
+
 }
 
 $fdt_events = new FdT_Events();
@@ -649,4 +758,13 @@ $fdt_events = new FdT_Events();
 function fdt_has_event_passed($post_id = false) {
 	global $fdt_events;
 	return $fdt_events->has_event_passed($post_id);
+}
+
+function fdt_time_selector() {
+	global $fdt_events;
+	return $fdt_events->time_selector();
+}
+function fdt_custom_selector() {
+	global $fdt_events;
+	return $fdt_events->custom_selector();
 }

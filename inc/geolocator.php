@@ -167,13 +167,13 @@ class FdT_Geolocator {
 		$cities = get_terms($this->city_taxonomy);
 		if($cities) {
 			?>
-			<div class="city-selector">
+			<div class="city-selector dropdown">
 				<?php if($user_city) : ?>
-					<h2 class="city-title"><span class="lsf">&#xE03e;</span> <?php echo $user_city; ?></h2>
+					<span class="city-title title"><span class="lsf">&#xE03e;</span> <?php echo $user_city; ?></span>
 				<?php else : ?>
-					<span class="city-title"><span class="lsf">&#xE03e;</span> <?php _e('Select a city', 'feiradetrocas'); ?></span>
+					<span class="city-title title"><span class="lsf">&#xE03e;</span> <?php _e('All cities', 'feiradetrocas'); ?></span>
 				<?php endif; ?>
-				<ul class="city-list">
+				<ul class="city-list list">
 					<?php if($user_city) : ?>
 						<li class="tip"><?php _e('Choose another city:', 'feiradetrocas'); ?></li>
 						<li>

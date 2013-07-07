@@ -92,17 +92,43 @@ button {
 }
 
 .section-title {
-	.city-selector {
+	.fdt-date-range {
+		float: right;
+		margin: 0 0 0 30px;
+		line-height: 25px;
+		label.title {
+			display: block;
+			line-height: 14px;
+			margin: 0 0 5px;
+			color: #333;
+		}
+		label,
+		input {
+			color: #999;
+			font-size: 12px;
+			display: inline;
+		}
+		input[type=text] {
+			width: 80px;
+			padding: 2px;
+		}
+		input[type=submit] {
+			padding: 6px 8px;
+			font-size: 10px;
+			color: #f0f0f0;
+		}
+	}
+	.dropdown {
 		width: 200px;
 		float: right;
-		margin: 0;
+		margin: 0 0 0 20px;
 		position: relative;
 		.gradient(@maincolor, darken(@maincolor, 5%), @maincolor);
 		.box-shadow(0 2px 3px rgba(0,0,0,0.6));
 		.border-radius(3px);
 		.transition(margin .2s ease-in-out);
 		color: #f0f0f0;
-		.city-title {
+		.title {
 			margin: 0;
 			padding: 14px 10px 14px 15px;
 			display: block;
@@ -125,7 +151,7 @@ button {
 			text-shadow: 1px 1px 1px rgba(0,0,0,.3);
 			float: right;
 		}
-		.city-list {
+		.list {
 			display: none;
 			.gradient(#f0f0f0, #ddd, #f0f0f0);
 			.box-shadow(0 2px 3px rgba(0,0,0,0.6));
@@ -175,7 +201,7 @@ button {
 			}
 		}
 		&:hover {
-			.city-title {
+			.title {
 				color: #333;
 				background: #f0f0f0;
 				text-shadow: 0 0 0;
@@ -185,7 +211,7 @@ button {
 				color: #333;
 				text-shadow: 0 0 0;
 			}
-			.city-list {
+			.list {
 				display: block;
 			}
 		}

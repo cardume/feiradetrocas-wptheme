@@ -18,7 +18,7 @@ if(is_front_page()) {
 			<?php fdt_custom_selector(); ?>
 			<?php fdt_time_selector(); ?>
 			<?php fdt_city_selector(); ?>
-			<h2><?php _e('Events', 'mappress'); ?></h2>
+			<h2><?php _e('Events', 'feiradetrocas'); ?></h2>
 		</div>
 	</div>
 </div>

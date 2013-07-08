@@ -24,7 +24,60 @@
 		<section class="content">
 			<div class="container">
 				<div class="eight columns">
+					<p class="fdt-event-date">
+						<span class="week-day"><?php echo fdt_get_event_date($post->ID, 'l'); ?></span>
+						<span class="day"><?php echo fdt_get_event_date($post->ID, 'd'); ?></span>
+						<span class="month"><?php echo fdt_get_event_date($post->ID, 'M'); ?></span>
+						<span class="year"><?php echo fdt_get_event_date($post->ID, 'Y'); ?></span>
+						<span class="time"><?php echo fdt_get_event_date($post->ID, 'H:i'); ?></span>
+					</p>
+					<p class="address">
+						<?php echo get_post_meta($post->ID, 'geocode_address', true); ?>
+					</p>
+					<?php fdt_add_photo_button(); ?>
 					<?php the_content(); ?>
+					<div class="sponsors row">
+						<h3><?php _e('Sponsors', 'feiradetrocas'); ?></h3>
+						<?php
+						$sponsors = array(
+							array(
+								'name' => get_post_meta($post->ID, '_fdt_sponsor_01_name', true),
+								'email' => get_post_meta($post->ID, '_fdt_sponsor_01_email', true),
+								'phone' => get_post_meta($post->ID, '_fdt_sponsor_01_phone', true)
+							),
+							array(
+								'name' => get_post_meta($post->ID, '_fdt_sponsor_02_name', true),
+								'email' => get_post_meta($post->ID, '_fdt_sponsor_02_email', true),
+								'phone' => get_post_meta($post->ID, '_fdt_sponsor_02_phone', true)
+							)
+						);
+						?>
+						<div class="four columns alpha">
+							<div class="sponsor-data">
+								<h4><?php echo $sponsors[0]['name']; ?></h4>
+								<?php if($sponsors[0]['email']) : ?>
+									<p class="email"><?php echo $sponsors[0]['email']; ?></p>
+								<?php endif; ?>
+								<?php if($sponsors[0]['phone']) : ?>
+									<p class="phone"><?php echo $sponsors[0]['phone']; ?></p>
+								<?php endif; ?>
+							</div>
+						</div>
+						<?php if($sponsors[1]['name']) : ?>
+							<div class="four columns omega">
+								<div class="sponsor-data">
+									<h4><?php echo $sponsors[1]['name']; ?></h4>
+									<?php if($sponsors[1]['email']) : ?>
+										<p class="email"><?php echo $sponsors[1]['email']; ?></p>
+									<?php endif; ?>
+									<?php if($sponsors[1]['phone']) : ?>
+										<p class="phone"><?php echo $sponsors[1]['phone']; ?></p>
+									<?php endif; ?>
+								</div>
+							</div>
+						<?php endif; ?>
+					</div>
+					<?php fdt_photo_gallery(); ?>
 				</div>
 				<div class="three columns offset-by-one">
 					<aside id="sidebar">

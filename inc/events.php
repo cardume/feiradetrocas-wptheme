@@ -108,6 +108,7 @@ class FdT_Events {
 				'id' => 'acf_event-information',
 				'title' => __('Event information', 'feiradetrocas'),
 				'fields' => array (
+					/*
 					array (
 						'toolbar' => 'basic',
 						'media_upload' => 'no',
@@ -117,6 +118,7 @@ class FdT_Events {
 						'name' => '_fdt_additional_information',
 						'type' => 'wysiwyg',
 					),
+					*/
 					array (
 						'key' => 'field_51d49fdb0ad54',
 						'label' => __('Sponsor 1', 'feiradetrocas'),
@@ -387,8 +389,17 @@ class FdT_Events {
 			</form>
 			<?php
 		} elseif(!is_user_logged_in()) {
-			?><h3><?php _e('You must be logged in to create an event', 'feiradetrocas'); ?></h3><?php
-			wp_login_form();
+			?>
+			<div class="row">
+				<h3><?php _e('You must be logged in to create an event', 'feiradetrocas'); ?></h3>
+			</div>
+			<div class="four columns alpha">
+				<?php wp_login_form(); ?>
+			</div>
+			<div class="four columns omega">
+				<?php wp_register('<span class="button">', '</span>'); ?>
+			</div>
+			<?php
 		} else {
 			?><h3><?php _e('You are not allowed to create events', 'feiradetrocas'); ?></h3><?php
 		}
@@ -412,7 +423,7 @@ class FdT_Events {
 		/* 
 		 * Check if user can edit post
 		 */
-		if($data['post_id'] && !current_user_can('edit_post', $data['post_id']))
+		if(isset($data['post_id']) && !current_user_can('edit_post', $data['post_id']))
 			$this->ajax_response(array('status' => 'error', 'message' => __('You are not allowed to edit this event.', 'feiradetrocas')));
 
 		/*
@@ -507,8 +518,10 @@ class FdT_Events {
 	function edit_event_link($link) {
 		global $post;
 
-		if(get_post_type($post->ID) == 'fdt_event' && !is_admin())
-			$link = add_query_arg(array('edit' => 1), get_permalink());
+		if($post) {
+			if(get_post_type($post->ID) == 'fdt_event' && !is_admin())
+				$link = add_query_arg(array('edit' => 1), get_permalink());
+		}
 
 		return $link;
 	}
@@ -566,6 +579,10 @@ class FdT_Events {
 
 	function pre_get_posts($query) {
 
+		/*
+		 * Apply GET requests
+		 */
+
 		if(isset($_REQUEST['fdt_event_time'])) {
 			$query->set('fdt_event_time', $_REQUEST['fdt_event_time']);
 		}
@@ -591,63 +608,70 @@ class FdT_Events {
 		/*
 		 * Events meta query
 		 */
+		
+		if($this->is_event_query($query)) {
 
-		$meta_query = false;
+			$meta_query = false;
 
-		if($query->get('fdt_event_date_from') || $query->get('fdt_event_date_to')) {
+			/*
+			 * Range filter
+			 */
 
-			$from = $query->get('fdt_event_date_from');
-			$to = $query->get('fdt_event_date_to');
+			if($query->get('fdt_event_date_from') || $query->get('fdt_event_date_to')) {
 
-			if(!$from)
-				$from = 0;
-			if(!$to)
-				$to = time() + time();
+				$from = $query->get('fdt_event_date_from');
+				$to = $query->get('fdt_event_date_to');
 
-			$meta_query = array(
-				'relation' => 'AND',
-				$this->get_event_time_query_array(strtotime($from), '>='),
-				$this->get_event_time_query_array(strtotime($to), '<')
-			);
+				if(!$from)
+					$from = 0;
+				if(!$to)
+					$to = time() + time();
 
+				$meta_query = array(
+					'relation' => 'AND',
+					$this->get_event_time_query_array(strtotime($from), '>='),
+					$this->get_event_time_query_array(strtotime($to), '<')
+				);
 
-		} elseif($query->get('fdt_event_time')) {
+			/*
+			 * Pre-defined filters
+			 */
 
-			$event_time = $query->get('fdt_event_time');
+			} elseif($query->get('fdt_event_time')) {
 
-			$query->set('post_type', 'fdt_event');
+				$event_time = $query->get('fdt_event_time');
 
-			$times = $this->get_available_times();
+				$query->set('post_type', 'fdt_event');
 
-			// look inside available times query
+				$times = $this->get_available_times();
 
-			foreach($times as $time_key => $args) {
+				// look inside available times query
 
-				if($time_key == $event_time) {
-					$meta_query = $args['meta_query'];
+				foreach($times as $time_key => $args) {
+
+					if($time_key == $event_time) {
+						$meta_query = $args['meta_query'];
+					}
+
 				}
 
 			}
 
-		}
+			/*
+			 * Set meta query if any
+			 */
 
-		/*
-		 * Set meta query if any
-		 */
-
-		if($meta_query) { 
-			if($query->get('meta_query')) {
-				$query->set('meta_query', array_merge($query->get('meta_query'), $meta_query));
-			} else {
-				$query->set('meta_query', $meta_query);
+			if($meta_query) { 
+				if($query->get('meta_query')) {
+					$query->set('meta_query', array_merge($query->get('meta_query'), $meta_query));
+				} else {
+					$query->set('meta_query', $meta_query);
+				}
 			}
-		}
 
-		/* 
-		 * Events ordering
-		 */
-		
-		if($this->is_event_query($query)) {
+			/* 
+			 * Events ordering
+			 */
 
 			$order = 'ASC';
 
@@ -657,6 +681,7 @@ class FdT_Events {
 			$query->set('orderby', 'meta_value');
 			$query->set('meta_key', '_fdt_event_date');
 			$query->set('order', $order);
+
 		}
 
 		return $query;
@@ -669,13 +694,35 @@ class FdT_Events {
 		return ($query->get('post_type') == 'fdt_event' || $query->get('post_type') == array('fdt_event'));
 	}
 
+	function get_event_date($post_id = false, $format = false) {
+		global $post;
+		$post_id = $post_id ? $post_id : $post->ID;
+
+		if(!$format)
+			$format = _x('l, F d Y \a\t g:i a', 'Event full date format', 'feiradetrocas');
+
+		$date = get_post_meta($post_id, '_fdt_event_date', true);
+
+		return date($format, $date);
+	}
+
+	function get_event_day($post_id = false, $format = false) {
+		$format = $format ? $format : _x('l, F d Y', 'Event day format', 'feiradetrocas');
+		return $this->get_event_date($post_id, $format);
+	}
+
+	function get_event_time($post_id = false, $format = false) {
+		$format = $format ? $format : _x('g:i a', 'Event time format', 'feiradetrocas');
+		return $this->get_event_date($post_id, $format);
+	}
+
 	function has_event_passed($post_id = false) {
 		global $post;
 		$post_id = $post_id ? $post_id : $post->ID;
 
 		$event_time = get_post_meta($post_id, '_fdt_event_date', true);
 
-		if(is_int($event_time) && $event_time < time())
+		if($event_time && $event_time < time())
 			return true;
 
 		return false;
@@ -754,6 +801,21 @@ class FdT_Events {
 }
 
 $fdt_events = new FdT_Events();
+
+function fdt_get_event_date($post_id = false, $format = false) {
+	global $fdt_events;
+	return $fdt_events->get_event_date($post_id, $format);
+}
+
+function fdt_get_event_day($post_id = false, $format = false) {
+	global $fdt_events;
+	return $fdt_events->get_event_day($post_id, $format);
+}
+
+function fdt_get_event_time($post_id = false, $format = false) {
+	global $fdt_events;
+	return $fdt_events->get_event_time($post_id, $format);
+}
 
 function fdt_has_event_passed($post_id = false) {
 	global $fdt_events;

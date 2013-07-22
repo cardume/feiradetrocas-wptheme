@@ -38,20 +38,7 @@
 					<?php the_content(); ?>
 					<div class="sponsors row">
 						<h3><?php _e('Sponsors', 'feiradetrocas'); ?></h3>
-						<?php
-						$sponsors = array(
-							array(
-								'name' => get_post_meta($post->ID, '_fdt_sponsor_01_name', true),
-								'email' => get_post_meta($post->ID, '_fdt_sponsor_01_email', true),
-								'phone' => get_post_meta($post->ID, '_fdt_sponsor_01_phone', true)
-							),
-							array(
-								'name' => get_post_meta($post->ID, '_fdt_sponsor_02_name', true),
-								'email' => get_post_meta($post->ID, '_fdt_sponsor_02_email', true),
-								'phone' => get_post_meta($post->ID, '_fdt_sponsor_02_phone', true)
-							)
-						);
-						?>
+						<?php $sponsors = fdt_get_event_sponsors(); ?>
 						<div class="four columns alpha">
 							<div class="sponsor-data">
 								<h4><?php echo $sponsors[0]['name']; ?></h4>

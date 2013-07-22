@@ -50,7 +50,8 @@ class FdT_Events {
 			'show_in_menu' => true,
 			'has_archive' => true,
 			'rewrite' => array('slug' => 'events', 'with_front' => false),
-			'menu_position' => 5
+			'menu_position' => 5,
+			'taxonomies' => array('category', 'post_tag')
 		);
 
 		register_post_type('fdt_event', $args);
@@ -728,6 +729,26 @@ class FdT_Events {
 		return false;
 	}
 
+	function get_event_sponsors($post_id = false) {
+		global $post;
+		$post_id = $post_id ? $post_id : $post->ID;
+
+		$sponsors = array(
+			array(
+				'name' => get_post_meta($post_id, '_fdt_sponsor_01_name', true),
+				'email' => get_post_meta($post_id, '_fdt_sponsor_01_email', true),
+				'phone' => get_post_meta($post_id, '_fdt_sponsor_01_phone', true)
+			),
+			array(
+				'name' => get_post_meta($post_id, '_fdt_sponsor_02_name', true),
+				'email' => get_post_meta($post_id, '_fdt_sponsor_02_email', true),
+				'phone' => get_post_meta($post_id, '_fdt_sponsor_02_phone', true)
+			)
+		);
+
+		return $sponsors;
+	}
+
 	function time_selector() {
 
 		if(!$this->is_event_query())
@@ -815,6 +836,11 @@ function fdt_get_event_day($post_id = false, $format = false) {
 function fdt_get_event_time($post_id = false, $format = false) {
 	global $fdt_events;
 	return $fdt_events->get_event_time($post_id, $format);
+}
+
+function fdt_get_event_sponsors($post_id = false) {
+	global $fdt_events;
+	return $fdt_events->get_event_sponsors($post_id);
 }
 
 function fdt_has_event_passed($post_id = false) {

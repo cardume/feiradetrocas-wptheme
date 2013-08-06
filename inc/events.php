@@ -17,13 +17,13 @@ class FdT_Events {
 		$this->register_post_type();
 		$this->acf_fields();
 		$this->setup_ajax();
-		//add_filter('query_vars', array($this, 'query_vars'));
+		add_action('mappress_featured_post_types', array($this, 'featured_post_types'));
+		add_filter('query_vars', array($this, 'query_vars'));
 		add_filter('pre_get_posts', array($this, 'pre_get_posts'), 1);
 		add_filter('get_edit_post_link', array($this, 'edit_event_link'));
 		add_shortcode('fdt_new_event', array($this, 'new_event_shortcode'));
 		add_action('template_redirect', array($this, 'edit_event_template'));
 		add_action('mappress_geocode_scripts', array($this, 'geocode_scripts'));
-		//add_filter('mappress_markers_data', array($this, 'markers_data'), 10, 2);
 	}
 
 	function register_post_type() {
@@ -202,6 +202,11 @@ class FdT_Events {
 			));
 		}
 
+	}
+
+	function featured_post_types($post_types) {
+		$post_types[] = 'fdt_event';
+		return $post_types;
 	}
 
 	function edit_event_template() {
@@ -700,39 +705,11 @@ class FdT_Events {
 		return $query;
 	}
 
-	function markers_data($data, $marker_query) {
-
-		if($marker_query->get('city_not_found')) {
-			$data['features'] = array();
-		}
-
-		if($marker_query->post_count < 100 && $marker_query->get('fdt_event_time') == 'future') {
-
-			$extra_features = array();
-
-			$amount = 100 - $marker_query->post_count;
-			$extra_args = array('posts_per_page' => $amount, 'fdt_event_time' => 'past', 'is_event_query' => 1);
-			error_log(print_r(array_merge($marker_query->query, $extra_args), true));
-			$extra_query = new WP_Query(array_merge($marker_query->query, $extra_args));
-			if($extra_query->have_posts()) {
-				while($extra_query->have_posts()) {
-					$extra_query->the_post();
-					$extra_features[] = mappress_get_post_geojson($post->ID);
-				}
-			}
-
-			$data['features'] = array_merge($data['features'], $extra_features);
-
-		}
-
-		return $data;
-	}
-
 	function is_event_query($query = false) {
 		global $wp_query;
 		$query = $query ? $query : $wp_query;
 
-		return (!$query->get('is_marker_query') && !is_admin() && ($query->get('post_type') == 'fdt_event' || $query->get('post_type') == array('fdt_event')));
+		return (!$query->get('not_event_query') && !$query->get('is_marker_query') && !is_admin() && ($query->get('post_type') == 'fdt_event' || $query->get('post_type') == array('fdt_event')));
 	}
 
 	function get_event_date($post_id = false, $format = false) {

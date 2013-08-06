@@ -3,7 +3,6 @@
  * Mousehover bubble content
  */
 ?>
-<span class="arrow">&nbsp;</span>
 <h4><?php the_title(); ?></h4>
 <?php if(get_post_type() == 'fdt_event') { ?>
 	<div class="event-date">

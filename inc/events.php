@@ -17,11 +17,13 @@ class FdT_Events {
 		$this->register_post_type();
 		$this->acf_fields();
 		$this->setup_ajax();
+		//add_filter('query_vars', array($this, 'query_vars'));
 		add_filter('pre_get_posts', array($this, 'pre_get_posts'), 1);
 		add_filter('get_edit_post_link', array($this, 'edit_event_link'));
 		add_shortcode('fdt_new_event', array($this, 'new_event_shortcode'));
 		add_action('template_redirect', array($this, 'edit_event_template'));
 		add_action('mappress_geocode_scripts', array($this, 'geocode_scripts'));
+		//add_filter('mappress_markers_data', array($this, 'markers_data'), 10, 2);
 	}
 
 	function register_post_type() {
@@ -527,11 +529,12 @@ class FdT_Events {
 		return $link;
 	}
 
-	function query_vars() {
-		global $wp;
-		$wp->add_query_var('fdt_event_time');
-		$wp->add_query_var('fdt_event_date_from');
-		$wp->add_query_var('fdt_event_date_to');
+	function query_vars($vars) {
+		$vars[] = 'fdt_event_time';
+		$vars[] = 'fdt_event_date_from';
+		$vars[] = 'fdt_event_date_to';
+		$vars[] = 'is_event_query';
+		return $vars;
 	}
 
 	function get_event_time_query_array($value, $compare) {
@@ -597,13 +600,11 @@ class FdT_Events {
 		}
 
 		/*
-		 * Set front page query
+		 * Set event post type
 		 */
 
-		if(is_front_page()) {
+		if(is_front_page() || is_tag() || is_category()) {
 			$query->set('post_type', 'fdt_event');
-			if(!$query->get('fdt_event_time') && !$query->get('fdt_event_date_from') && !$query->get('fdt_event_date_to'))
-				$query->set('fdt_event_time', 'future');
 		}
 
 		/*
@@ -611,6 +612,9 @@ class FdT_Events {
 		 */
 		
 		if($this->is_event_query($query)) {
+
+			if(!$query->get('fdt_event_time') && !$query->get('fdt_event_date_from') && !$query->get('fdt_event_date_to') && !is_single())
+				$query->set('fdt_event_time', 'future');
 
 			$meta_query = false;
 
@@ -662,12 +666,15 @@ class FdT_Events {
 			 * Set meta query if any
 			 */
 
-			if($meta_query) { 
+			if($meta_query) {
+				/*
 				if($query->get('meta_query')) {
 					$query->set('meta_query', array_merge($query->get('meta_query'), $meta_query));
 				} else {
 					$query->set('meta_query', $meta_query);
 				}
+				*/
+				$query->set('meta_query', $meta_query);
 			}
 
 			/* 
@@ -685,14 +692,47 @@ class FdT_Events {
 
 		}
 
+		if($query->get('is_marker_query')) {
+			$query->set('meta_query', null);
+			$query->set('meta_key', null);
+		}
+
 		return $query;
+	}
+
+	function markers_data($data, $marker_query) {
+
+		if($marker_query->get('city_not_found')) {
+			$data['features'] = array();
+		}
+
+		if($marker_query->post_count < 100 && $marker_query->get('fdt_event_time') == 'future') {
+
+			$extra_features = array();
+
+			$amount = 100 - $marker_query->post_count;
+			$extra_args = array('posts_per_page' => $amount, 'fdt_event_time' => 'past', 'is_event_query' => 1);
+			error_log(print_r(array_merge($marker_query->query, $extra_args), true));
+			$extra_query = new WP_Query(array_merge($marker_query->query, $extra_args));
+			if($extra_query->have_posts()) {
+				while($extra_query->have_posts()) {
+					$extra_query->the_post();
+					$extra_features[] = mappress_get_post_geojson($post->ID);
+				}
+			}
+
+			$data['features'] = array_merge($data['features'], $extra_features);
+
+		}
+
+		return $data;
 	}
 
 	function is_event_query($query = false) {
 		global $wp_query;
 		$query = $query ? $query : $wp_query;
 
-		return ($query->get('post_type') == 'fdt_event' || $query->get('post_type') == array('fdt_event'));
+		return (!$query->get('is_marker_query') && !is_admin() && ($query->get('post_type') == 'fdt_event' || $query->get('post_type') == array('fdt_event')));
 	}
 
 	function get_event_date($post_id = false, $format = false) {
@@ -704,7 +744,7 @@ class FdT_Events {
 
 		$date = get_post_meta($post_id, '_fdt_event_date', true);
 
-		return date($format, $date);
+		return date_i18n($format, $date);
 	}
 
 	function get_event_day($post_id = false, $format = false) {

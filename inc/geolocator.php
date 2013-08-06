@@ -100,6 +100,8 @@ class FdT_Geolocator {
 		global $wp;
 		$wp->add_query_var('city_not_found');
 		$wp->add_query_var('not_geo_query');
+		$wp->add_query_var('geo_query');
+		$wp->add_query_var('city_not_registered');
 
 		add_action('pre_get_posts', array($this, 'geo_wp_query'));
 
@@ -117,6 +119,7 @@ class FdT_Geolocator {
 
 				if(!$city_term) {
 					$query->set('city_not_found', 1);
+					$query->set('city_not_registered', 1);
 					return $query;
 				}
 
@@ -129,7 +132,7 @@ class FdT_Geolocator {
 				add_action('pre_get_posts', array($this, 'geo_wp_query'));
 
 				if(!$have_posts) {
-					$query->set($this->city_taxonomy, null);
+					//$query->set($this->city_taxonomy, null);
 					$query->set('city_not_found', 1);
 				}
 
@@ -155,7 +158,7 @@ class FdT_Geolocator {
 	 * Verify which query to inject city term
 	 */
 	function is_geo_query($query) {
-		return apply_filters('fdt_is_geo_query', (!is_admin() && !$query->get('not_geo_query')), $query);
+		return apply_filters('fdt_is_geo_query', ((!is_admin() && !$query->get('not_geo_query')) || $query->get('geo_query')), $query);
 	}
 
 	/*

@@ -1,8 +1,8 @@
 h3{margin-bottom:20px;}
-.map .popup h4{margin:0 0 10px;}
-.map .popup .event-date{border-bottom:1px solid #eee;border-top:1px solid #eee;margin:0 0 10px;padding:0 0 10px;}.map .popup .event-date h5{color:#999;font-size:12px;text-transform:uppercase;margin-bottom:5px;}
-.map .popup .event-date p{margin:0;}.map .popup .event-date p.time{font-size:18px;}
-.map .popup .passed{margin:0;color:red;font-weight:bold;font-size:10px;text-transform:uppercase;}
+.map .leaflet-popup-pane h4{margin:0 0 10px;}
+.map .leaflet-popup-pane .event-date{border-bottom:1px solid #eee;border-top:1px solid #eee;margin:0 0 10px;padding:0 0 10px;}.map .leaflet-popup-pane .event-date h5{color:#999;font-size:12px;text-transform:uppercase;margin-bottom:5px;}
+.map .leaflet-popup-pane .event-date p{margin:0;}.map .leaflet-popup-pane .event-date p.time{font-size:18px;}
+.map .leaflet-popup-pane .passed{margin:0;color:red;font-weight:bold;font-size:10px;text-transform:uppercase;}
 a.button,.button,input[type=submit],button{border:0;background:#77a832;background:-webkit-gradient(linear, left bottom, left top, color-stop(0, #69942c), color-stop(1, #77a832));background:-ms-linear-gradient(bottom, #69942c, #77a832);background:-moz-linear-gradient(center bottom, #69942c 0%, #77a832 100%);background:-o-linear-gradient(#77a832, #69942c);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77a832', endColorstr='#69942c', GradientType=0);-webkit-box-shadow:0 2px 3px rgba(0, 0, 0, 0.6);-khtml-box-shadow:0 2px 3px rgba(0, 0, 0, 0.6);-moz-box-shadow:0 2px 3px rgba(0, 0, 0, 0.6);-o-box-shadow:0 2px 3px rgba(0, 0, 0, 0.6);box-shadow:0 2px 3px rgba(0, 0, 0, 0.6);-webkit-border-radius:3px;-khtml-border-radius:3px;-moz-border-radius:3px;-o-border-radius:3px;border-radius:3px;-webkit-transition:margin 0.2s ease-in-out;-khtml-transition:margin 0.2s ease-in-out;-moz-transition:margin 0.2s ease-in-out;-o-transition:margin 0.2s ease-in-out;transition:margin 0.2s ease-in-out;padding:10px;color:#f0f0f0;text-decoration:none;font-weight:800;text-transform:uppercase;cursor:pointer;}a.button a,.button a,input[type=submit] a,button a{color:#f0f0f0;text-decoration:none;}
 a.button:hover,.button:hover,input[type=submit]:hover,button:hover{color:#fff;}
 .section-title{position:relative;z-index:100;}.section-title .fdt-date-range{float:right;margin:0 0 0 30px;line-height:25px;}.section-title .fdt-date-range label.title{display:block;line-height:14px;margin:0 0 5px;color:#333;}

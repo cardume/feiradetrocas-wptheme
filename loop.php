@@ -9,8 +9,8 @@
 			<?php endif; ?>
 			<?php
 			// extra posts
-			if($wp_query->found_posts < 10 && $wp_query->get('fdt_event_time') == 'future') {
-				$amount = 10 - $wp_query->found_posts;
+			if($wp_query->found_posts < 30 && $wp_query->get('fdt_event_time') == 'future') {
+				$amount = 30 - $wp_query->found_posts;
 				$extra_args = array('posts_per_page' => $amount, 'fdt_event_time' => 'past');
 				$extra_query = new WP_Query(array_merge($wp_query->query, $extra_args));
 				if($extra_query->have_posts() && !$extra_query->get('city_not_found')) {

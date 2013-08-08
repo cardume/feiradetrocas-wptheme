@@ -608,7 +608,7 @@ class FdT_Events {
 		 * Set event post type
 		 */
 
-		if(is_front_page() || is_tag() || is_category()) {
+		if($query->is_main_query() && ($query->is_home() || $query->is_tag() || $query->is_category())) {
 			$query->set('post_type', 'fdt_event');
 		}
 
@@ -872,4 +872,8 @@ function fdt_time_selector() {
 function fdt_custom_selector() {
 	global $fdt_events;
 	return $fdt_events->custom_selector();
+}
+function fdt_is_event_query($query = false) {
+	global $fdt_events;
+	return $fdt_events->is_event_query($query);
 }

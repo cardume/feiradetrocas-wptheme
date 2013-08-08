@@ -13,7 +13,6 @@
 			formMessage('', fdt_events.loading_msg);
 
 			$.post(fdt_events.ajaxurl + '?' + serialized, { action: 'save_event' }, function(data) {
-				console.log(data);
 				formMessage(data.status, data.message);
 			}, 'json');
 

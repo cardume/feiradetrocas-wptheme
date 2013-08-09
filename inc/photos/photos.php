@@ -34,6 +34,18 @@ class FdT_Events_Photos extends FdT_Events {
 				<input type="submit" value="<?php _e('Send images', 'feiradetrocas'); ?>" />
 			</form>
 			<?php
+		} elseif(!is_user_logged_in()) {
+			?>
+			<div class="row">
+				<h3><?php _e('You must be logged in to submit a photo', 'feiradetrocas'); ?></h3>
+			</div>
+			<div class="four columns alpha">
+				<?php wp_login_form(); ?>
+			</div>
+			<div class="four columns omega">
+				<?php wp_register('<span class="button">', '</span>'); ?>
+			</div>
+			<?php
 		}
 
 	}
@@ -127,7 +139,7 @@ class FdT_Events_Photos extends FdT_Events {
 
 	function add_photo_template() {
 		global $post;
-		if(is_singular('fdt_event') && isset($_GET['add_photo']) && current_user_can('edit_posts')) {
+		if(is_singular('fdt_event') && isset($_GET['add_photo'])) {
 			?>
 			<?php get_header(); ?>
 

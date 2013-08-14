@@ -189,7 +189,8 @@ class FdT_Events_Photos extends FdT_Events {
 			'post_type' => 'attachment',
 			'post_status' => null,
 			'post_parent' => $post_id,
-			'posts_per_page' => -1
+			'posts_per_page' => -1,
+			'not_geo_query' => 1
 		));
 
 		if($images) {

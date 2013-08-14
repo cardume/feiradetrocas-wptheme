@@ -273,6 +273,23 @@ class FdT_Events {
 							<p class="event-description required">
 								<textarea name="event_data[post_content]" placeholder="<?php _e('Description', 'feiradetrocas'); ?>"><?php if($post) echo $post->post_content; ?></textarea>
 							</p>
+							<?php if(!$post && !isset($_REQUEST['cat_id'])) : ?>
+								<p class="event-category required">
+									<?php
+									$cats = get_categories(array('hide_empty' => 0));
+									if($cats) :
+										?>
+										<select name="event_data[category]">
+											<option><?php _e('Select an event category', 'feiradetrocas'); ?></option>
+											<?php foreach($cats as $cat) : ?>
+												<option value="<?php echo $cat->term_id; ?>"><?php echo $cat->name; ?></option>
+											<?php endforeach; ?>
+										</select>
+									<?php endif; ?>
+								</p>
+							<?php else : ?>
+								<input type="hidden" name="event_data[category]" value="<?php echo $_REQUEST['cat_id']; ?>" />
+							<?php endif; ?>
 						</div>
 					</div>
 					<div class="six columns omega">
@@ -440,6 +457,7 @@ class FdT_Events {
 		if(
 			!$data['post_title'] ||
 			!$data['post_content'] ||
+			!$data['category'] ||
 			!$data['event_date_time'] ||
 			!$data['sponsor_01_name'] ||
 			(
@@ -461,7 +479,8 @@ class FdT_Events {
 				'post_title' => $data['post_title'],
 				'post_content' => $data['post_content'],
 				'post_status' => 'pending',
-				'post_type' => 'fdt_event'
+				'post_type' => 'fdt_event',
+				'post_category' => array($data['category'])
 			),
 			'acf' => array(
 				'_fdt_sponsor_01_name' => $data['sponsor_01_name'],

@@ -4,7 +4,7 @@
 			<?php $map_id = mappress_map(null, false, true); ?>
 			<div class="container">
 				<div class="eleven columns">
-					<h2><?php _e('Featured', 'mappress'); ?></h2>
+					<h2><?php _e('Featured', 'feiradetrocas'); ?></h2>
 				</div>
 				<div class="four columns">
 					<div class="featured-content">
@@ -20,7 +20,7 @@
 											<h3><a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>"><?php the_title(); ?></a></h3>
 											<p class="meta">
 												<span class="date"><?php echo get_the_date(); ?></span>
-												<span class="author"><?php _e('by', 'mappress'); ?> <?php the_author(); ?></span>
+												<span class="author"><?php _e('by', 'feiradetrocas'); ?> <?php the_author(); ?></span>
 											</p>
 										</header>
 										<section class="post-content">
@@ -29,7 +29,7 @@
 											</div>
 										</section>
 										<aside class="actions">
-											<a href="<?php the_permalink(); ?>"><?php _e('Read more', 'mappress'); ?></a>
+											<a href="<?php the_permalink(); ?>"><?php _e('Read more', 'feiradetrocas'); ?></a>
 										</aside>
 									</article>
 								</li>
@@ -40,7 +40,7 @@
 						<ul>
 							<?php $i = 0; while(have_posts()) : the_post(); $i++; ?>
 								<?php if(!mappress_element_geometry_data()) continue; ?>
-								<li class="slider-item-controller" data-postid="post-<?php the_ID(); ?>" title="<?php _e('Go to', 'mappress'); ?> <?php the_title(); ?>"><?php _e('Go to', 'mappress'); ?> <?php the_title(); ?></li>
+								<li class="slider-item-controller" data-postid="post-<?php the_ID(); ?>" title="<?php _e('Go to', 'feiradetrocas'); ?> <?php the_title(); ?>"><?php _e('Go to', 'mappress'); ?> <?php the_title(); ?></li>
 							<?php endwhile; ?>
 						</ul>
 				</div>

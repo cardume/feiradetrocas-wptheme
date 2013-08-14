@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Feira de Trocas\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-09 12:21-0300\n"
-"PO-Revision-Date: 2013-08-09 12:22-0300\n"
+"POT-Creation-Date: 2013-08-14 18:25-0300\n"
+"PO-Revision-Date: 2013-08-14 18:26-0300\n"
 "Last-Translator: Miguel Peixe <miguel@cardume.art.br>\n"
 "Language-Team: cardume <contato@cardume.art.br>\n"
 "Language: \n"
@@ -20,24 +20,28 @@ msgstr ""
 #: ../item-small.php:14
 #: ../content-featured.php:23
 #: ../single-fdt_event.php:17
+#: ../inc/featured.php:46
 msgid "by"
 msgstr "por"
 
 #: ../item-small.php:24
 #: ../content-featured.php:32
+#: ../inc/featured.php:55
 msgid "Read more"
 msgstr "Leia mais"
 
 #: ../content-featured.php:7
+#: ../inc/featured.php:28
 msgid "Featured"
 msgstr "Em destaque"
 
 #: ../content-featured.php:43
+#: ../inc/featured.php:73
 msgid "Go to"
 msgstr "Ir para"
 
 #: ../single-fdt_event.php:40
-#: ../inc/events.php:280
+#: ../inc/events.php:297
 msgid "Sponsors"
 msgstr "Responsáveis"
 
@@ -101,7 +105,7 @@ msgid "Event date and time"
 msgstr "Dia e hora do evento"
 
 #: ../inc/events.php:75
-#: ../inc/events.php:364
+#: ../inc/events.php:381
 msgid "Date and time"
 msgstr "Dia e hora"
 
@@ -115,22 +119,22 @@ msgstr "Responsável 1"
 
 #: ../inc/events.php:135
 #: ../inc/events.php:164
-#: ../inc/events.php:292
-#: ../inc/events.php:324
+#: ../inc/events.php:309
+#: ../inc/events.php:341
 msgid "Name"
 msgstr "Nome"
 
 #: ../inc/events.php:142
 #: ../inc/events.php:171
-#: ../inc/events.php:301
-#: ../inc/events.php:333
+#: ../inc/events.php:318
+#: ../inc/events.php:350
 msgid "Email"
 msgstr "Email"
 
 #: ../inc/events.php:150
 #: ../inc/events.php:179
-#: ../inc/events.php:310
-#: ../inc/events.php:342
+#: ../inc/events.php:327
+#: ../inc/events.php:359
 msgid "Phone number"
 msgstr "Telefone"
 
@@ -158,114 +162,118 @@ msgstr "Título do evento"
 msgid "Description"
 msgstr "Descrição"
 
-#: ../inc/events.php:281
+#: ../inc/events.php:283
+msgid "Select an event category"
+msgstr "Selecione uma categoria para o evento"
+
+#: ../inc/events.php:298
 msgid "The event can have two sponsors."
 msgstr "O evento pode ter dois responsáveis."
 
-#: ../inc/events.php:284
+#: ../inc/events.php:301
 msgid "Main sponsor information"
 msgstr "Informações do responsável principal"
 
-#: ../inc/events.php:316
+#: ../inc/events.php:333
 msgid "Secondary sponsor information"
 msgstr "Informações do responsável secundário"
 
-#: ../inc/events.php:352
+#: ../inc/events.php:369
 msgid "Point the location"
 msgstr "Aponte a localização"
 
-#: ../inc/events.php:353
+#: ../inc/events.php:370
 msgid "Enter the address and hit enter to find the event location"
 msgstr "Entre com o endereço e pressione enter para encontrar a localização"
 
-#: ../inc/events.php:393
+#: ../inc/events.php:410
 msgid "Update event"
 msgstr "Atualizar evento"
 
-#: ../inc/events.php:395
+#: ../inc/events.php:412
 msgid "Submit event"
 msgstr "Enviar evento"
 
-#: ../inc/events.php:402
+#: ../inc/events.php:419
 msgid "You must be logged in to create an event"
 msgstr "Você deve estar logado para criar um evento"
 
-#: ../inc/events.php:412
+#: ../inc/events.php:429
 msgid "You are not allowed to create events"
 msgstr "Você não tem permissão para criar eventos"
 
-#: ../inc/events.php:427
+#: ../inc/events.php:444
 msgid "Permission denied."
 msgstr "Permissão negada."
 
-#: ../inc/events.php:435
+#: ../inc/events.php:452
 msgid "You are not allowed to edit this event."
 msgstr "Você não tem permissão para editar este evento"
 
-#: ../inc/events.php:451
+#: ../inc/events.php:469
 msgid "Make sure you filled all the required fields."
 msgstr "Verifique se você preencheu todos os campos obrigatórios."
 
-#: ../inc/events.php:499
+#: ../inc/events.php:518
 msgid "Something went wrong while creating your event, please try again. If the error persists, please contact our team."
 msgstr "Ocorreu um erro ao criar seu evento, por favor tente novamente. Se o erro persistir, contate nossa equipe."
 
-#: ../inc/events.php:510
+#: ../inc/events.php:529
 msgid "Thank you for sending your event! You will receive an email soon."
 msgstr "Obrigado por enviar seu evento! Você receberá um email em breve."
 
-#: ../inc/events.php:512
+#: ../inc/events.php:531
 msgid "Your event has been updated"
 msgstr "Seu evento foi atualizado"
 
-#: ../inc/events.php:557
+#: ../inc/events.php:576
 msgid "Upcoming events"
 msgstr "Próximos eventos"
 
-#: ../inc/events.php:563
+#: ../inc/events.php:582
 msgid "This week"
 msgstr "Esta semana"
 
-#: ../inc/events.php:571
+#: ../inc/events.php:590
 msgid "This month"
 msgstr "Este mês"
 
-#: ../inc/events.php:579
+#: ../inc/events.php:598
 msgid "Past events"
 msgstr "Eventos passados"
 
-#: ../inc/events.php:720
+#: ../inc/events.php:739
 msgctxt "Event full date format"
 msgid "l, F d Y \\a\\t g:i a"
 msgstr "l, d \\d\\e F \\d\\e Y \\à\\s H:i"
 
-#: ../inc/events.php:728
+#: ../inc/events.php:747
 msgctxt "Event day format"
 msgid "l, F d Y"
 msgstr "l, d \\d\\e F \\d\\e Y"
 
-#: ../inc/events.php:733
+#: ../inc/events.php:752
 msgctxt "Event time format"
 msgid "g:i a"
 msgstr "H:i"
 
-#: ../inc/events.php:788
+#: ../inc/events.php:807
 msgid "Custom filter"
 msgstr "Filtro customizado"
 
-#: ../inc/events.php:815
+#: ../inc/events.php:834
 msgid "Filter by date range:"
 msgstr "Filtre por data:"
 
-#: ../inc/events.php:816
+#: ../inc/events.php:835
 msgid "from"
 msgstr "de"
 
-#: ../inc/events.php:818
+#: ../inc/events.php:837
 msgid "to"
 msgstr "para"
 
-#: ../inc/events.php:821
+#: ../inc/events.php:840
 msgid "Filter"
 msgstr "Filtro"
 
@@ -468,7 +476,6 @@ msgstr ""
 #: ../inc/acf/core/fields/file.php:181
 #: ../inc/acf/core/fields/relationship.php:553
 #: ../inc/acf/core/fields/relationship.php:577
-#: ../inc/acf/core/fields/image.php:166
 msgid "All"
 msgstr ""
 
@@ -664,7 +671,6 @@ msgstr ""
 
 #: ../inc/acf/core/fields/wysiwyg.php:20
 #: ../inc/acf/core/fields/file.php:20
-#: ../inc/acf/core/fields/image.php:20
 msgid "Content"
 msgstr ""
 
@@ -754,7 +760,6 @@ msgstr ""
 
 #: ../inc/acf/core/fields/taxonomy.php:365
 #: ../inc/acf/core/fields/file.php:148
-#: ../inc/acf/core/fields/image.php:117
 msgid "Return Value"
 msgstr ""
 
@@ -780,7 +785,6 @@ msgid "Edit File"
 msgstr ""
 
 #: ../inc/acf/core/fields/file.php:28
-#: ../inc/acf/core/fields/image.php:29
 msgid "uploaded to this post"
 msgstr ""
 
@@ -805,12 +809,10 @@ msgid "File ID"
 msgstr ""
 
 #: ../inc/acf/core/fields/file.php:170
-#: ../inc/acf/core/fields/image.php:155
 msgid "Library"
 msgstr ""
 
 #: ../inc/acf/core/fields/file.php:182
-#: ../inc/acf/core/fields/image.php:167
 msgid "Uploaded to post"
 msgstr ""
 
@@ -819,7 +821,6 @@ msgid "File Updated."
 msgstr ""
 
 #: ../inc/acf/core/fields/file.php:379
-#: ../inc/acf/core/fields/image.php:396
 msgid "Media attachment updated."
 msgstr ""
 
@@ -901,6 +902,7 @@ msgid "Remove"
 msgstr ""
 
 #: ../inc/acf/core/fields/image.php:83
+#: ../inc/acf/core/views/meta_box_fields.php:113
 msgid "Edit"
 msgstr ""
 
@@ -1353,7 +1355,6 @@ msgstr ""
 #: ../inc/acf/core/controllers/field_group.php:365
 #: ../inc/acf/core/controllers/field_group.php:427
 #: ../inc/acf/core/controllers/export.php:370
-#: ../inc/acf/core/controllers/field_groups.php:148
 msgid "Fields"
 msgstr ""
 
@@ -1530,7 +1531,6 @@ msgid ""
 msgstr ""
 
 #: ../inc/acf/core/controllers/export.php:380
-#: ../inc/acf/core/controllers/field_groups.php:448
 msgid "Options Page"
 msgstr ""
 
@@ -1626,6 +1626,7 @@ msgid "Download Add-ons"
 msgstr ""
 
 #: ../inc/acf/core/controllers/field_groups.php:311
+#: ../inc/acf/core/controllers/addons.php:42
 msgid "Add-ons"
 msgstr ""
 
@@ -1818,14 +1819,17 @@ msgstr ""
 #: ../inc/acf/core/controllers/field_groups.php:442
 #: ../inc/acf/core/controllers/field_groups.php:450
 #: ../inc/acf/core/controllers/field_groups.php:458
+#: ../inc/acf/core/controllers/addons.php:242
 msgid "Download"
 msgstr ""
 
 #: ../inc/acf/core/controllers/field_groups.php:432
+#: ../inc/acf/core/controllers/addons.php:130
 msgid "Repeater Field"
 msgstr ""
 
 #: ../inc/acf/core/controllers/field_groups.php:440
+#: ../inc/acf/core/controllers/addons.php:137
 msgid "Gallery Field"
 msgstr ""
 
@@ -2022,15 +2026,15 @@ msgstr "Você deve selecionar uma imagem!"
 msgid "Submit photos to"
 msgstr "Envie fotos para"
 
-#: ../inc/photos/photos.php:198
+#: ../inc/photos/photos.php:199
 msgid "Photo gallery"
 msgstr "Galeria de imagens"
 
-#: ../inc/photos/photos.php:210
+#: ../inc/photos/photos.php:211
 msgid "sent by"
 msgstr "enviado por"
 
-#: ../inc/photos/photos.php:230
+#: ../inc/photos/photos.php:231
 msgid "Are you sure?"
 msgstr "Você tem certeza?"
 

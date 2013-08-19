@@ -27,7 +27,7 @@ function fdt_map() {
 	if(is_front_page())
 		fdt_featured_posts();
 }
-//add_action('mappress_map', 'fdt_map');
+add_action('mappress_map', 'fdt_map');
 
 require_once(STYLESHEETPATH . '/inc/acf-config.php'); // advanced custom fields setup
 require_once(STYLESHEETPATH . '/inc/events.php'); // events feature

@@ -18,16 +18,39 @@ function fdt_scripts() {
 add_action('wp_enqueue_scripts', 'fdt_scripts');
 
 function fdt_use_marker_extent() {
+	if(is_front_page())
+		return false;
+	
 	return true;
 }
-add_filter('mappress_use_marker_extent', 'fdt_use_marker_extent');
+add_filter('jeo_use_marker_extent', 'fdt_use_marker_extent');
+
+function fdt_use_transient() {
+	return false;
+}
+add_filter('jeo_markers_enable_transient', 'fdt_use_transient');
+
+function fdt_use_browser_caching() {
+	return false;
+}
+add_filter('jeo_markers_enable_browser_caching', 'fdt_use_browser_caching');
 
 include_once(STYLESHEETPATH . '/inc/featured.php');
 function fdt_map() {
 	if(is_front_page())
 		fdt_featured_posts();
 }
-add_action('mappress_map', 'fdt_map');
+add_action('jeo_map', 'fdt_map');
+
+// geo queries
+function fdt_geo_query($query) {
+	global $wp_the_query;
+	if(!is_admin() && $query === $wp_the_query && !$query->is_single())
+		$query->set('geo_query', 1);
+
+	return $query;
+}
+add_action('pre_get_posts', 'fdt_geo_query');
 
 require_once(STYLESHEETPATH . '/inc/acf-config.php'); // advanced custom fields setup
 require_once(STYLESHEETPATH . '/inc/events.php'); // events feature

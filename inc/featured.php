@@ -11,7 +11,7 @@ function fdt_featured_posts() {
 		'post_type' => 'post',
 		'meta_query' => array(
 			array(
-				'key' => '_mappress_featured',
+				'key' => '_jeo_featured',
 				'value' => 1
 			)
 		),

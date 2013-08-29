@@ -11,7 +11,7 @@
 			<?php } ?>
 			<h3><a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>"><?php the_title(); ?></a></h3>
 			<p class="meta">
-				<span class="author"><?php _e('by', 'mappress'); ?> <?php the_author(); ?></span>
+				<span class="author"><?php _e('by', 'feiradetrocas'); ?> <?php the_author(); ?></span>
 			</p>
 		</header>
 		<section class="post-content">
@@ -20,8 +20,8 @@
 			</div>
 		</section>
 		<aside class="actions clearfix">
-			<?php echo mappress_find_post_on_map_button(); ?>
-			<a href="<?php the_permalink(); ?>"><?php _e('Read more', 'mappress'); ?></a>
+			<?php echo jeo_find_post_on_map_button(); ?>
+			<a href="<?php the_permalink(); ?>"><?php _e('Read more', 'feiradetrocas'); ?></a>
 		</aside>
 	</article>
 </li>

@@ -9,7 +9,7 @@ class FdT_Events {
 
 	function __construct() {
 
-		add_action('mappress_init', array($this, 'setup'));
+		add_action('jeo_init', array($this, 'setup'));
 
 	}
 
@@ -17,13 +17,14 @@ class FdT_Events {
 		$this->register_post_type();
 		$this->acf_fields();
 		$this->setup_ajax();
-		add_action('mappress_featured_post_types', array($this, 'featured_post_types'));
+		add_action('jeo_featured_post_types', array($this, 'featured_post_types'));
 		add_filter('query_vars', array($this, 'query_vars'));
 		add_filter('pre_get_posts', array($this, 'pre_get_posts'), 1);
 		add_filter('get_edit_post_link', array($this, 'edit_event_link'));
 		add_shortcode('fdt_new_event', array($this, 'new_event_shortcode'));
 		add_action('template_redirect', array($this, 'edit_event_template'));
-		add_action('mappress_geocode_scripts', array($this, 'geocode_scripts'));
+		add_action('jeo_geocode_scripts', array($this, 'geocode_scripts'));
+		add_action('jeo_marker_base_query', array($this, 'marker_base_query'));
 	}
 
 	function register_post_type() {
@@ -239,11 +240,11 @@ class FdT_Events {
 	}
 
 	function geocode_scripts() {
-		$geocode_service = mappress_get_geocode_service();
-		$gmaps_key = mappress_get_gmaps_api_key();
+		$geocode_service = jeo_get_geocode_service();
+		$gmaps_key = jeo_get_gmaps_api_key();
 		if($geocode_service == 'gmaps' && $gmaps_key)
 			wp_enqueue_script('google-maps-api');
-		wp_enqueue_script('mappress.geocode.box');
+		wp_enqueue_script('jeo.geocode.box');
 	}
 
 	function event_form($post = false) {
@@ -368,7 +369,7 @@ class FdT_Events {
 						<div class="geocode">
 							<h3 class="required"><?php _e('Point the location', 'feiradetrocas'); ?></h3>
 							<p><?php _e('Enter the address and hit enter to find the event location', 'feiradetrocas'); ?></p>
-							<?php mappress_geocode_box($post); ?>
+							<?php jeo_geocode_box($post); ?>
 							<script type="text/javascript">
 								jQuery(document).ready(function() {
 									geocodeBox();
@@ -523,7 +524,7 @@ class FdT_Events {
 		}
 
 		// save geo data
-		mappress_geocode_save($post_id);
+		jeo_geocode_save($post_id);
 
 		if($new)
 			$this->ajax_response(array('status' => 'success', 'message' => __('Thank you for sending your event! You will receive an email soon.', 'feiradetrocas')));
@@ -539,7 +540,10 @@ class FdT_Events {
 	}
 
 	function new_event_shortcode($atts) {
-		return $this->event_form();
+		ob_start();
+		$this->event_form();
+		$form = ob_get_clean();
+		return $form;
 	}
 
 	function edit_event_link($link) {
@@ -554,6 +558,7 @@ class FdT_Events {
 	}
 
 	function query_vars($vars) {
+		$vars[] = 'fdt_force_event_time';
 		$vars[] = 'fdt_event_time';
 		$vars[] = 'fdt_event_date_from';
 		$vars[] = 'fdt_event_date_to';
@@ -691,13 +696,6 @@ class FdT_Events {
 			 */
 
 			if($meta_query) {
-				/*
-				if($query->get('meta_query')) {
-					$query->set('meta_query', array_merge($query->get('meta_query'), $meta_query));
-				} else {
-					$query->set('meta_query', $meta_query);
-				}
-				*/
 				$query->set('meta_query', $meta_query);
 			}
 
@@ -716,7 +714,7 @@ class FdT_Events {
 
 		}
 
-		if($query->get('is_marker_query')) {
+		if($query->get('is_marker_query') && $query->get('fdt_event_time') == 'future' && !$query->get('fdt_force_event_time')) {
 			$query->set('meta_query', null);
 			$query->set('meta_key', null);
 		}
@@ -724,11 +722,18 @@ class FdT_Events {
 		return $query;
 	}
 
+	function marker_base_query($query) {
+		if(isset($_REQUEST['fdt_event_time'])) {
+			$query->set('fdt_force_event_time', 1);
+		}
+		return $query;
+	}
+
 	function is_event_query($query = false) {
 		global $wp_query;
 		$query = $query ? $query : $wp_query;
 
-		return (!$query->get('not_event_query') && !$query->get('is_marker_query') && !is_admin() && ($query->get('post_type') == 'fdt_event' || $query->get('post_type') == array('fdt_event')));
+		return (!$query->get('not_event_query') && !is_admin() && ($query->get('post_type') == 'fdt_event' || $query->get('post_type') == array('fdt_event')));
 	}
 
 	function get_event_date($post_id = false, $format = false) {

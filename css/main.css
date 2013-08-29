@@ -30,7 +30,7 @@ a.button:hover,.button:hover,input[type=submit]:hover,button:hover{color:#fff;}
 .event-form select{width:100%;padding:15px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}
 .event-form .info{margin-top:120px;}
 .event-form .ui-datepicker{width:100%;}
-.event-form #geocode_box h4,.event-form #geocode_box #mappress_streetview,.event-form #geocode_box .latlng-container{display:none;}
+.event-form #geocode_box h4,.event-form #geocode_box #jeo_streetview,.event-form #geocode_box .latlng-container{display:none;}
 .event-form #geocode_box #geocode_address{width:75%;display:block;float:left;}
 .event-form #geocode_box p{margin:0;}
 .event-form #geocode_box .draggable-tip{margin:0 0 10px;font-size:12px;color:#999;font-style:italic;}

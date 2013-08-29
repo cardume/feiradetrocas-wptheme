@@ -17,7 +17,7 @@ class FdT_Geolocator {
 
 	function __construct() {
 
-		add_action('mappress_init', array($this, 'setup'));
+		add_action('jeo_init', array($this, 'setup'));
 
 	}
 
@@ -32,16 +32,16 @@ class FdT_Geolocator {
 	}
 
 	/*
-	 * City taxonomy connected to MapPress geocode box
+	 * City taxonomy connected to jeo geocode box
 	 */
 
 	function register_taxonomy() {
 		$this->taxonomy_city();
-		add_action('mappress_geocode_box_save', array($this, 'populate_city'));
+		add_action('jeo_geocode_box_save', array($this, 'populate_city'));
 	}
 
 	function geo_post_types() {
-		return apply_filters('fdt_geo_post_types', mappress_get_mapped_post_types());
+		return apply_filters('fdt_geo_post_types', jeo_get_mapped_post_types());
 	}
 
 	function taxonomy_city() {
@@ -82,7 +82,7 @@ class FdT_Geolocator {
 
 	}
 
-	// save mappress city data to taxonomy
+	// save jeo city data to taxonomy
 
 	function populate_city($post_id) {
 		if(isset($_POST['geocode_city'])) {
@@ -108,6 +108,11 @@ class FdT_Geolocator {
 	}
 
 	function geo_wp_query($query) {
+
+		global $wp_the_query;
+
+		if($query !== $wp_the_query && !$query->get('geo_query'))
+			return $query;
 
 		if($this->is_geo_query($query)) {
 
@@ -158,7 +163,7 @@ class FdT_Geolocator {
 	 * Verify which query to inject city term
 	 */
 	function is_geo_query($query) {
-		return apply_filters('fdt_is_geo_query', ((!is_admin() && !$query->get('not_geo_query')) || $query->get('geo_query')), $query);
+		return apply_filters('fdt_is_geo_query', ($query->get('geo_query')), $query);
 	}
 
 	/*

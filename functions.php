@@ -11,6 +11,7 @@ add_action('after_setup_theme', 'fdt_setup');
 
 function fdt_scripts() {
 	wp_enqueue_style('fdt-main', get_stylesheet_directory_uri() . '/css/main.css');
+	wp_enqueue_style('fdt-custom', get_stylesheet_directory_uri() . '/style.css');
 	wp_enqueue_script('fdt-main', get_stylesheet_directory_uri() . '/js/feiradetrocas.js');
 	wp_enqueue_script('shadowbox-js', get_stylesheet_directory_uri() . '/inc/photos/shadowbox/shadowbox.js', array('jquery'));
 	wp_enqueue_style('shadowbox-js', get_stylesheet_directory_uri() . '/inc/photos/shadowbox/shadowbox.css');
